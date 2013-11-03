@@ -1,0 +1,941 @@
+<!doctype html>
+<head>
+<title></title>
+<meta name="description" content="logic puzzles">
+<meta name="author" content="Sprenkle">
+<meta charset="UTF-8">
+
+
+<LINK href="css/main.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="js/underscore.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="AppleClasses/AppleWidget.js"></script>
+<script type="text/javascript" src="Data/puzzle.js"></script>
+<script type="text/javascript">
+var commandStack =[];
+
+ widget.pauseAudioVisual = function() 
+{
+// save on close
+SavePuzzle(puzzle.puzzlenumber, puzzle.title, puzzle.hints);
+};
+
+function SavethisPuzzle()
+{
+	SavePuzzle(puzzle.puzzlenumber, puzzle.title, puzzle.hints);
+}
+
+function PuzzleMistakes()
+{
+	UndoMistakes(puzzle);
+	SavethisPuzzle();
+	commandStack = [];
+	document.getElementById("undo").style.display = "none";
+}
+
+function CheckthisSolution()
+{
+	CheckSolution(puzzle);
+}
+
+function Build()
+{
+	BuildPuzzle(puzzle);
+}
+function LoadPuzzle()
+{
+	// set board values
+	InitBoard(puzzle);
+	// load any saved data
+	//LoadSavedPuzzle(puzzle.puzzlenumber); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TURN ME BACK ON!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+function UndoMoves()
+{
+	if(commandStack.length > 0)
+	{
+		Undo(puzzle.puzzlenumber);
+	}
+}
+
+function ClearthisBoard()
+{
+
+ClearBoard();
+commandStack = [];
+//SavethisPuzzle(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TURN ME BACK ON!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+document.getElementById("undo").style.display = "none";
+}
+
+function ClearExes()
+{
+
+ClearAllExes();
+commandStack = [];
+//SavethisPuzzle(); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TURN ME BACK ON!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+document.getElementById("undo").style.display = "none";
+}
+
+
+function DisplayDescription()
+{
+window.location.href = "main.html#descriptionModal";
+}
+
+function ReadyToSurrender()
+{
+	document.getElementById("surrenderSolution").style.display = "none";
+	window.location.href = "main.html#solutionModal";
+}
+
+function iSurrender()
+{
+	document.getElementById("surrenderSolution").style.display = "block";
+}
+function hideSurrender()
+{
+	document.getElementById("surrenderSolution").style.display = "none";
+}
+
+function Switch()
+{
+	var file = document.getElementById("puzzleFileName").value;
+	file = file + ".js";
+	
+	SwapPuzzle(file);
+
+}
+
+</script>
+	
+</head>
+<body background="img/Simple-Gray-Background-1024x1024.jpg" onload='LoadPuzzle()'> 
+<!-- starnetblog_subtile_gray_pattern5 Melamine-wood-004.png gamesplash2.jpg starnetblog_subtile_background_pattern2.jpg Simple-Gray-Background-1024x1024 -->
+<div id="divTitle">
+<h2 style="font-family: fantasy; padding-left:20px; text-align:center">
+<a id="title" href="#descriptionModal"></a>	
+</h2>
+
+</div>
+<div id="divGrid">
+<table class="grid" id="tblGrid" cellspacing="0">
+<tr>
+<td style="border:0" rowspan="2" colspan="3"><div id="divGridControls" class="gridcontrols">
+<!--<div id="save"><a onclick='SavethisPuzzle()' href="#"><img SRC="img/save.png" WIDTH=25 HEIGHT=25>&nbsp;Save&nbsp;</a></div>-->
+<div style="display: none" id="undo"><a onclick='UndoMoves()' href="#"><img SRC="img/undo.png" WIDTH=25 HEIGHT=25>&nbsp;Undo&nbsp;</a></div>
+<div><a href="#clearBrdModal"><img SRC="img/ex.png" alt="undo" WIDTH=25 HEIGHT=25>&nbsp;Clear Grid&nbsp;</a></div>
+<div><a href="#undoModal"><img SRC="img/mistakes.png" alt="mistakes" WIDTH=25 HEIGHT=25>&nbsp;Undo Mistakes&nbsp;</a></div>
+</div></td>
+<td colspan="5" id="Cat1Top" class="special"></td> <!-- Category 1 -->
+<td colspan="5" id="Cat2Top" class="special"></td> <!-- Category 2 -->
+<td colspan="5" id="Cat3Top" class="special"></td> <!-- Category 3 -->
+</tr>
+<tr class="special">
+<!-- Category 1 -->
+<td class="rotated_cell"><div id="Cat1TopItem1" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat1TopItem2" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat1TopItem3" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat1TopItem4" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat1TopItem5" class="rotated_text"></div></td>
+<!-- Category 2 -->
+<td class="rotated_cell"><div id="Cat2TopItem1" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat2TopItem2" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat2TopItem3" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat2TopItem4" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat2TopItem5" class="rotated_text"></div></td>
+<!-- Category 3 -->
+<td class="rotated_cell"><div id="Cat3TopItem1" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat3TopItem2" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat3TopItem3" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat3TopItem4" class="rotated_text"></div></td>
+<td class="rotated_cell"><div id="Cat3TopItem5" class="rotated_text"></div></td>
+</tr>
+<tr id="r0" class="special">
+<td rowspan="5" class="rotated_cell special">
+<div id="Cat4Side" class="rotated_text"></div></td>
+<td id="Cat4SideItem1" colspan="2">&nbsp;</td>
+<td id="r0cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell9" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell10" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell11" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell12" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell13" onclick="changeMe(this);">&nbsp;</td>
+<td id="r0cell14" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r1" class="special">
+<td id="Cat4SideItem2" colspan="2"></td>
+<td id="r1cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell9" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell10" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell11" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell12" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell13" onclick="changeMe(this);">&nbsp;</td>
+<td id="r1cell14" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r2" class="special">
+<td id="Cat4SideItem3" colspan="2"></td>
+<td id="r2cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell9" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell10" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell11" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell12" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell13" onclick="changeMe(this);">&nbsp;</td>
+<td id="r2cell14" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r3" class="special">
+<td id="Cat4SideItem4" colspan="2"></td>
+<td id="r3cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell9" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell10" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell11" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell12" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell13" onclick="changeMe(this);">&nbsp;</td>
+<td id="r3cell14" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r4" class="special">
+<td id="Cat4SideItem5" colspan="2"></td>
+<td id="r4cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell9" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell10" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell11" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell12" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell13" onclick="changeMe(this);">&nbsp;</td>
+<td id="r4cell14" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r5" class="special">
+<td rowspan="5" class="rotated_cell special"><div id="Cat3Side" class="rotated_text"></div></td>
+<td id="Cat3SideItem1" colspan="2"></td>
+<td id="r5cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r5cell9" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r6" class="special">
+<td id="Cat3SideItem2" colspan="2"></td>
+<td id="r6cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r6cell9" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r7" class="special">
+<td id="Cat3SideItem3" colspan="2"></td>
+<td id="r7cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r7cell9" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r8" class="special">
+<td id="Cat3SideItem4" colspan="2"></td>
+<td id="r8cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r8cell9" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r9" class="special">
+<td id="Cat3SideItem5" colspan="2"></td>
+<td id="r9cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell4" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell5" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell6" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell7" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell8" onclick="changeMe(this);">&nbsp;</td>
+<td id="r9cell9" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r10" class="special">
+<td rowspan="5" class="rotated_cell special"><div  id="Cat2Side" class="rotated_text"></div></td>
+<td id="Cat2SideItem1" colspan="2"></td>
+<td id="r10cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r10cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r10cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r10cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r10cell4" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r11" class="special">
+<td id="Cat2SideItem2" colspan="2"></td>
+<td id="r11cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r11cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r11cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r11cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r11cell4" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r12" class="special">
+<td id="Cat2SideItem3" colspan="2"></td>
+<td id="r12cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r12cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r12cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r12cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r12cell4" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r13" class="special">
+<td id="Cat2SideItem4" colspan="2"></td>
+<td id="r13cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r13cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r13cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r13cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r13cell4" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+<tr id="r14" class="special">
+<td id="Cat2SideItem5" colspan="2"></td>
+<td id="r14cell0" onclick="changeMe(this);">&nbsp;</td>
+<td id="r14cell1" onclick="changeMe(this);">&nbsp;</td>
+<td id="r14cell2" onclick="changeMe(this);">&nbsp;</td>
+<td id="r14cell3" onclick="changeMe(this);">&nbsp;</td>
+<td id="r14cell4" onclick="changeMe(this);">&nbsp;</td>
+</tr>
+</table>
+</div>
+<div id="divSolutionControls" class="solutioncontrols" >
+<div style="cursor:pointer; cursor:hand" onclick="ReadyToSurrender();"><img SRC="img/flag.png" WIDTH=25 HEIGHT=25>&nbsp;Surrender?&nbsp;</div>
+<div><a href="#clearSolModal"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;Reset Solution&nbsp;</a></div>
+<div style="cursor:pointer; cursor:hand" onclick="CheckthisSolution();"><img SRC="img/submit.png" WIDTH=25 HEIGHT=25> Submit Solution </div>
+</div>
+<div class="solution" id="divSolution">
+	<table>
+		<tr>
+		<td id="Cat4Sol" class="special"></td><td id="Cat1Sol" class="special"></td><td id="Cat2Sol" class="special"></td><td id="Cat3Sol" class="special"></td>
+		</tr>
+		<tr>
+		<td id="Cat4SolItem1" bgcolor="white" height="25px"></td>
+		<td>
+		<select name="r0c1" id="r0c1">
+		</select>
+		</td>
+		<td>
+		<select name="r0c2" id="r0c2">
+		</select>
+		</td>
+		<td><select name="r0c3" id="r0c3">
+		</select>
+		</td>
+		<tr>
+		<td id="Cat4SolItem2" bgcolor="white" height="25px"></td>
+		<td><select name="r1c1" id="r1c1">
+		</select>
+		</td>
+		<td>
+		<select name="r1c2" id="r1c2">
+		</select>
+		</td>
+		<td>
+		<select name="r1c3" id="r1c3">
+		</select>
+		</td>
+		</tr>
+		<tr>
+		<td id="Cat4SolItem3" bgcolor="white" height="25px"></td>
+		<td>
+		<select name="r2c1" id="r2c1">
+		</select>
+		</td>
+		<td>
+		<select name="r2c2" id="r2c2">
+		</select>
+		</td>
+		<td>
+		<select name="r2c3" id="r2c3">
+		</select>
+		</td>
+		</tr>
+		<tr>
+		<td id="Cat4SolItem4" bgcolor="white" height="25px"></td>
+		<td>
+		<select name="r3c1" id="r3c1">
+		</select>
+		</td>
+		<td>
+		<select name="r3c2" id="r3c2">
+		<option value="" selected="true"></option>
+		</select>
+		</td>
+		<td><select name="r3c3" id="r3c3">
+		</select>
+		</td>
+		</tr>
+		<tr>
+		<td id="Cat4SolItem5" bgcolor="white" height="25px"></td>
+		<td>
+		<select name="r4c1" id="r4c1">
+		</select>
+		</td>
+		<td>
+		<select name="r4c2" id="r4c2">
+		</select>
+		</td>
+		<td><select name="r4c3" id="r4c3">
+		</select>
+		</td>
+		</tr>
+	</table>
+</div>
+
+<div class="narrowcolumn">
+<div style="float:right; padding-right:5px; padding-bottom:5px; font-color:white"><a href="#helpModal"><img SRC="img/help.png" WIDTH=32 HEIGHT=32>&nbsp;Need a hint?&nbsp;</a></div>
+	<div style="display:none" id="clue1" class="container">
+	<div><div style="float:left"><h2 id="c1"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c1chk" class="checkbox" onclick="ShowHide(this,'clue1', 'c1text');" name="c1chk" /></label></div></div>
+		<div id="c1text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue2" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c2"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c2chk" class="checkbox" onclick="ShowHide(this, 'clue2', 'c2text');" name="c2chk" /></label></div></div>
+		<div id="c2text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue3" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c3"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c3chk" class="checkbox" onclick="ShowHide(this, 'clue3', 'c3text');" name="c3chk" /></label></div></div>
+		<div id="c3text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue4" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c4"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c4chk" class="checkbox" onclick="ShowHide(this, 'clue4', 'c4text');" name="c4chk" /></label></div></div>
+		<div id="c4text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue5" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c5"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c5chk" class="checkbox" onclick="ShowHide(this, 'clue5', 'c5text');" name="c5chk" /></label></div></div>
+		<div id="c5text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue6" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c6"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c6chk" class="checkbox" onclick="ShowHide(this, 'clue6', 'c6text');" name="c6chk" /></label></div></div>
+		<div id="c6text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue7" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c7"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c7chk" class="checkbox" onclick="ShowHide(this, 'clue7', 'c7text');" name="c7chk" /></label></div></div>
+		<div id="c7text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue8" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c8"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c8chk" class="checkbox" onclick="ShowHide(this, 'clue8', 'c8text');" name="c8chk" /></label></div></div>
+		<div id="c8text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue9" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c9"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c9chk" class="checkbox" onclick="ShowHide(this, 'clue9', 'c9text');" name="c9chk" /></label></div></div>
+		<div id="c9text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="clue10" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="c10"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="c10chk" class="checkbox" onclick="ShowHide(this, 'clue10', 'c10text');" name="c10chk" /></label></div></div>
+		<div id="c10text" class="subContainer eheight">
+			</div>
+	</div>
+</div>
+<div class="HELPnarrowcolumn">
+	<div style="display:none" id="hint1" class="container">
+	<div><div style="float:left"><h2 id="hint_1"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint1chk" class="checkbox" onclick="ShowHide(this,'hint1', 'hint1text');" name="hint1chk" /></label></div></div>
+		<div id="hint1text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint2" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_2"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint2chk" class="checkbox" onclick="ShowHide(this, 'hint2', 'hint2text');" name="hint2chk" /></label></div></div>
+		<div id="hint2text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint3" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_3"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint3chk" class="checkbox" onclick="ShowHide(this, 'hint3', 'hint3text');" name="hint3chk" /></label></div></div>
+		<div id="hint3text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint4" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_4"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint4chk" class="checkbox" onclick="ShowHide(this, 'hint4', 'hint4text');" name="hint4chk" /></label></div></div>
+		<div id="hint4text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint5" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_5"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint5chk" class="checkbox" onclick="ShowHide(this, 'hint5', 'hint5text');" name="hint5chk" /></label></div></div>
+		<div id="hint5text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint6" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_6"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint6chk" class="checkbox" onclick="ShowHide(this, 'hint6', 'hint6text');" name="hint6chk" /></label></div></div>
+		<div id="hint6text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint7" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_7"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint7chk" class="checkbox" onclick="ShowHide(this, 'hint7', 'hint7text');" name="hint7chk" /></label></div></div>
+		<div id="hint7text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint8" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_8"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint8chk" class="checkbox" onclick="ShowHide(this, 'hint8', 'hint8text');" name="hint8chk" /></label></div></div>
+		<div id="hint8text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint9" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_9"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint9chk" class="checkbox" onclick="ShowHide(this, 'hint9', 'hint9text');" name="hint9chk" /></label></div></div>
+		<div id="hint9text" class="subContainer eheight">
+			</div>
+	</div>
+	<div style="display:none" id="hint10" class="container">
+	<div style="clear:both"><div style="float:left"><h2 id="hint_10"></h2></div><div style="float:right"><label>Hide <input type="checkbox" id="hint10chk" class="checkbox" onclick="ShowHide(this, 'hint10', 'hint10text');" name="hint10chk" /></label></div></div>
+		<div id="hint10text" class="subContainer eheight">
+			</div>
+	</div>
+</div>
+
+<div id="saveModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Save this puzzle</h2>
+		<p>Are you sure you want to save this puzzle?</p>
+		<p>Any previously saved instances of this puzzle will be overwritten!</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;Cancel&nbsp;</a></div>
+			<div onclick="SavethisPuzzle();" style="float:left; padding-bottom:10px; cursor:pointer; cursor:hand"><img SRC="img/save.png" WIDTH=25 HEIGHT=25>&nbsp;Save&nbsp;</div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="savesuccessModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Puzzle Saved!</h2>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK&nbsp;</a></div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="descriptionModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<p id="pDesc"></p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK&nbsp;</a></div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="savefailureModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2><img SRC="img/error.png" WIDTH=25 HEIGHT=25>&nbsp;Puzzle Save Failed</h2>
+		<p>Please try again.</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK&nbsp;</a></div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="undoModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Undo Mistakes</h2>
+		<p>Need a little help?</p>
+		<p>This will reset the board selections to the last time it was correct.</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;Cancel&nbsp;</a></div>
+			<div onclick="PuzzleMistakes();" style="float:left; padding-bottom:10px; cursor:pointer; cursor:hand"><img SRC="img/save.png" WIDTH=25 HEIGHT=25>&nbsp;Reset&nbsp;</div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="clearBrdModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Clear the grid.</h2>
+		<p>Are you sure you want to clear all selections from the grid?</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;Cancel&nbsp;</a></div>
+			<div onclick="ClearthisBoard();" style="float:left; padding-bottom:10px; cursor:pointer; cursor:hand"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;Ok&nbsp;</div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="clearSolModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Clear the solution.</h2>
+		<p>Are you sure you want to clear all selections from the solution table?</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;Cancel&nbsp;</a></div>
+			<div onclick="ClearSolution();" style="float:left; padding-bottom:10px; cursor:pointer; cursor:hand"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;Ok&nbsp;</div>
+			<br/>
+		</div>
+	</div>
+</div>
+<div id="solvesuccessModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Congratulations!</h2>
+		<p>You have solved the puzzle.</p>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK&nbsp;</a></div>
+			<br/>
+	</div>
+</div>
+<div id="solvefailureModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Sorry, this is not correct.</h2>
+			<div style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK&nbsp;</a></div>
+			<br/>
+	</div>
+</div>
+<div id="solutionModal" class="modalDialog">
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Giving up already?</h2>
+		<p>Are you sure you want to see the answer?</p>
+		<div>
+			<div style="float:left; padding-right:10px; padding-bottom:10px">
+				<a href="#close"><img SRC="img/ex.png" WIDTH=25 HEIGHT=25>&nbsp;No, I will give it another try!&nbsp;</a>
+			</div>
+			<div onclick="iSurrender();" style="float:left; padding-bottom:10px; cursor:pointer; cursor:hand">
+				<img SRC="img/save.png" WIDTH=25 HEIGHT=25>&nbsp;Yes, Show me the answer!&nbsp;
+			</div><br /><br />
+		</div>
+		<div style="display:none" id="surrenderSolution">
+				<p>Here is correct answer:</p>
+					<table>
+					<tr>
+					<td id="Cat4Sur" class="special"></td><td id="Cat1Sur" class="special"></td><td id="Cat2Sur" class="special"></td><td id="Cat3Sur" class="special"></td>
+					</tr>
+					<tr>
+					<td id="Cat4SurItem1" bgcolor="white"></td>
+					<td id="sr0c1" bgcolor="white"></td>
+					<td id="sr0c2" bgcolor="white"></td>
+					<td id="sr0c3" bgcolor="white"></td>
+					<tr>
+					<td id="Cat4SurItem2" bgcolor="white"></td>
+					<td id="sr1c1" bgcolor="white"></td>
+					<td id="sr1c2" bgcolor="white"></td>
+					<td id="sr1c3" bgcolor="white"></td>
+					</tr>
+					<tr>
+					<td id="Cat4SurItem3" bgcolor="white"></td>
+					<td id="sr2c1" bgcolor="white"></td>
+					<td id="sr2c2" bgcolor="white"></td>
+					<td id="sr2c3" bgcolor="white"></td>
+					</tr>
+					<tr>
+					<td id="Cat4SurItem4" bgcolor="white"></td>
+					<td id="sr3c1" bgcolor="white"></td>
+					<td id="sr3c2" bgcolor="white"></td>
+					<td id="sr3c3" bgcolor="white"></td>
+					</tr>
+					<tr>
+					<td id="Cat4SurItem5" bgcolor="white"></td>
+					<td id="sr4c1" bgcolor="white"></td>
+					<td id="sr4c2" bgcolor="white"></td>
+					<td id="sr4c3" bgcolor="white"></td>
+					</tr>
+					</table>
+					<br />
+					<div onclick="hideSurrender();" style="float:left; padding-right:10px; padding-bottom:10px">
+						<a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK, got it.&nbsp;</a>
+					</div> <br />
+			</div>
+	</div>
+</div>
+<div id="helpModal" class="modalDialog" >
+	<div>
+		<a href="#close" title="Close" class="close">X</a>
+		<h2>Need a little?</h2>
+		<p>Hints are based on the clues. Click to expand out each one you want to see.</p>
+		
+	<div id="helpArea">
+	<div id="help0">
+	  <div style="clear:both">
+	   <div style="float:left"><label>Introduction<input type="checkbox" id="h0chk" class="checkbox" onclick="ShowHelp(this,'help0', 'h0text');" name="h0chk" /></label></div>
+		<div style="display:none" id="h0text"></div>
+	   </div>
+	</div>
+	<div id="help1" style="display:none">
+		<div style="clear:both">
+			<div style="float:left"><label>Clue 1<input type="checkbox" id="h1chk" class="checkbox" onclick="ShowHelp(this,'help1', 'h1text');" name="h1chk" /></label></div>
+		<div style="display:none" id="h1text"></div>
+		</div>
+	</div>	
+	<div id="help2" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 2<input type="checkbox" id="h2chk" class="checkbox" onclick="ShowHelp(this,'help2', 'h2text');" name="h2chk" /></label></div>
+		<div style="display:none" id="h2text"></div>
+		</div>
+	</div>					
+	<div id="help3" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 3<input type="checkbox" id="h3chk" class="checkbox" onclick="ShowHelp(this,'help3', 'h3text');" name="h3chk" /></label></div>
+		<div style="display:none" id="h3text"></div>
+		</div>
+	</div>					
+	<div id="help4" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 4<input type="checkbox" id="h4chk" class="checkbox" onclick="ShowHelp(this,'help4', 'h4text');" name="h4chk" /></label></div>
+		<div style="display:none" id="h4text"></div>
+		</div>
+	</div>					
+	<div id="help5" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 5<input type="checkbox" id="h5chk" class="checkbox" onclick="ShowHelp(this,'help5', 'h5text');" name="h5chk" /></label></div>
+		<div style="display:none" id="h5text"></div>
+		</div>
+	</div>					
+	<div id="help6" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 6<input type="checkbox" id="h6chk" class="checkbox" onclick="ShowHelp(this,'help6', 'h6text');" name="h6chk" /></label></div>
+		<div style="display:none" id="h6text"></div>
+		</div>
+	</div>					
+	<div id="help7" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 7<input type="checkbox" id="h7chk" class="checkbox" onclick="ShowHelp(this,'help7', 'h7text');" name="h7chk" /></label></div>
+		<div style="display:none" id="h7text"></div>
+		</div>
+	</div>					
+	<div id="help8" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 8<input type="checkbox" id="h8chk" class="checkbox" onclick="ShowHelp(this,'help8', 'h8text');" name="h8chk" /></label></div>
+		<div style="display:none" id="h8text"></div>
+		</div>
+	</div>					
+	<div id="help9" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 9<input type="checkbox" id="h9chk" class="checkbox" onclick="ShowHelp(this,'help9', 'h9text');" name="h9chk" /></label></div>
+		<div style="display:none" id="h9text"></div>
+		</div>
+	</div>					
+	<div id="help10" style="display:none">
+		<div style="clear:both">
+<div style="float:left"><label>Clue 10<input type="checkbox" id="h10chk" class="checkbox" onclick="ShowHelp(this,'help10', 'h10text');" name="h10chk" /></label></div>
+		<div style="display:none" id="h10text"></div>
+		</div>
+	</div>										
+				<br />
+				<div onclick="hideSurrender();" style="float:left; padding-right:10px; padding-bottom:10px"><a href="#close"><img SRC="img/ok.png" WIDTH=25 HEIGHT=25>&nbsp;OK, got it.&nbsp;</a></div>
+				<br/>
+			    </div>
+	</div>
+</div>
+
+<div id="editArea" style="clear:both" class="editArea">
+	<div id="basicData">
+		Puzzle Number: <input type="number" id="puzzle_number" size="5" value="0">&nbsp; Hints: <input type="number" id="puzzle_hints" size="5" value="0"><br /><br />
+		&nbsp; Puzzle Title: <input type="text" id="puzzle_title" size="100" value="My Title"><br /><br />
+		<table id="lists">
+			<tr><td>Categories</td><td>Cat4</td><td>Cat1</td><td>Cat2</td><td>Cat3</td></tr>
+			<tr><td>Headings</td><td><input type="text" id="c4head"value="4"></td><td><input type="text" id="c1head" value="1"></td><td><input type="text" id="c2head" value="2"></td><td><input type="text" id="c3head" value="3"></td></tr>
+			<tr><td>Item 1</td><td><input type="text" id="c4_1" value="1"></td><td><input type="text" id="c1_1" value="1"></td><td><input type="text" id="c2_1" value="1"></td><td><input type="text" id="c3_1" value="1"></td></tr>
+			<tr><td>Item 2</td><td><input type="text" id="c4_2" value="2"></td><td><input type="text" id="c1_2" value="2"></td><td><input type="text" id="c2_2" value="2"></td><td><input type="text" id="c3_2" value="2"></td></tr>
+			<tr><td>Item 3</td><td><input type="text" id="c4_3" value="3"></td><td><input type="text" id="c1_3" value="3"></td><td><input type="text" id="c2_3" value="3"></td><td><input type="text" id="c3_3" value="3"></td></tr>
+			<tr><td>Item 4</td><td><input type="text" id="c4_4" value="4"></td><td><input type="text" id="c1_4" value="4"></td><td><input type="text" id="c2_4" value="4"></td><td><input type="text" id="c3_4" value="4"></td></tr>
+			<tr><td>Item 5</td><td><input type="text" id="c4_5" value="5"></td><td><input type="text" id="c1_5" value="5"></td><td><input type="text" id="c2_5" value="5"></td><td><input type="text" id="c3_5" value="5"></td></tr>
+		</table>
+	</div>
+	<br />
+	<div id="clueData">
+		<table id="lists">
+			<tr><td>Introduction & Clues</td><td class="edit"></td><td>Helps</td><td class="edit"></td><td>Rules</td><td></td></tr>
+			<tr>
+			<td><textarea id="e_intro" cols="45" rows="6">Introduction </textarea></td>
+			<td class="edit">0</td>
+			<td><textarea id="e_introHelp" cols="45" rows="6">No clues are provided in the introduction.</textarea></td>
+			<td class="edit">0</td>
+			<td><select name="e_r0" id="e_r0" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r0chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r0');" name="e_r0chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c1" cols="45" rows="6">Clue 1 </textarea></td>
+			<td class="edit">1</td>
+			<td><textarea id="e_h1" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">1</td>
+			<td><select name="e_r1" id="e_r1" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r1chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r1');" name="e_r1chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c2" cols="45" rows="6">Clue 2 </textarea></td>
+			<td class="edit">2</td>
+			<td><textarea id="e_h2" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">2</td>
+			<td><select name="e_r2" id="e_r2" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r2chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r2');" name="e_r2chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c3" cols="45" rows="6">Clue 3 </textarea></td>
+			<td class="edit">3</td>
+			<td><textarea id="e_h3" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">3</td>
+			<td><select name="e_r3" id="e_r3" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r3chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r3');" name="e_r3chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c4" cols="45" rows="6">Clue 4 </textarea></td>
+			<td class="edit">4</td>
+			<td><textarea id="e_h4" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">4</td>
+			<td><select name="e_r4" id="e_r4" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r4chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r4');" name="e_r4chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c5" cols="45" rows="6">Clue 5 </textarea></td>
+			<td class="edit">5</td>
+			<td><textarea id="e_h5" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">5</td>
+			<td><select name="e_r5" id="e_r5" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r5chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r5');" name="e_r5chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c6" cols="45" rows="6">Clue 6 </textarea></td>
+			<td class="edit">6</td>
+			<td><textarea id="e_h6" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">6</td>
+			<td><select name="e_r6" id="e_r2" size="6" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r6chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r6');" name="e_r6chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c7" cols="45" rows="6">Clue 7 </textarea></td>
+			<td class="edit">7</td>
+			<td><textarea id="e_h7" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">7</td>
+			<td><select name="e_r7" id="e_r7" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r7chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r7');" name="e_r7chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c8" cols="45" rows="6">Clue 8 </textarea></td>
+			<td class="edit">8</td>
+			<td><textarea id="e_h8" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">8</td>
+			<td><select name="e_r8" id="e_r8" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r8chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r8');" name="e_r8chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c9" cols="45" rows="6">Clue 9 </textarea></td>
+			<td class="edit">9</td>
+			<td><textarea id="e_h9" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">9</td>
+			<td><select name="e_r9" id="e_r9" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r9chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r9');" name="e_r9chk" /></td>
+			</tr>
+			<tr>
+			<td><textarea id="e_c10" cols="45" rows="6">Clue 10</textarea></td>
+			<td class="edit">10</td>
+			<td><textarea id="e_h10" cols="45" rows="6">Based on this clue, we now know that </textarea></td>
+			<td class="edit">10</td>
+			<td><select name="e_r10" id="e_r10" size="5" multiple="multiple"></select></td>
+			<td class="rule_controls"><button name="" id="" onclick="ClearSelected()">Clear</button><br />
+				<input type="checkbox" id="e_r10chk" class="checkbox" onclick="SelectDeselectRule(this, 'e_r10');" name="e_r10chk" /></td>
+			</tr>
+		</table>
+	</div>
+        <div class="edit_controls">
+		<input type="text" id="puzzleFileName"><button type="button"  onclick="Switch();">Click to Replace Puzzle 0</button>&nbsp;<button type="button"  onclick="UploadExisting();">Reload Puzzle</button><br />
+		<!-- <button  type="button" onclick="ClearExes();">Clear Exes</button> -->
+		<div style="float:right; padding-right:25px">
+			<button  type="button" onclick="Build();">Build Puzzle</button>
+		</div>
+	</div>
+	<div id="puzzle_preview" class="preview">
+		<textarea id="epreview" cols="50" rows="100"> </textarea>
+	</div>
+	<div class="rules_engine">
+		<button type="button"  onclick="allCombinations();">Test Combos</button>&nbsp;<button type="button"  onclick="reconcileAgain();">Reconcile Combos</button>
+		<br />
+		<div class="builder"> <!-- chkbox - dropdown - button = textbox -->
+		Category 4: <select name="e_cat4" id="e_cat4"></select>&nbsp;&nbsp;<button class="builder_buttons" type="button" onclick="AddToBox('e_cat4')">Add</button><br />
+		Category 1: <select name="e_cat1" id="e_cat1"></select>&nbsp;&nbsp;<button class="builder_buttons" type="button" onclick="AddToBox('e_cat1')">Add</button><br />
+		Category 2: <select name="e_cat2" id="e_cat2"></select>&nbsp;&nbsp;<button class="builder_buttons" type="button" onclick="AddToBox('e_cat2')">Add</button><br />
+		Category 3: <select name="e_cat3" id="e_cat3"></select>&nbsp;&nbsp;<button class="builder_buttons" type="button" onclick="AddToBox('e_cat3')">Add</button><br />
+		<br />
+		Inserts: <button class="builder_buttons" type="button" onclick="InsertLeftParen()">(</button>&nbsp;&nbsp;
+                         <button class="builder_buttons" type="button" onclick="InsertOR()">|</button>&nbsp;&nbsp;
+                         <button class="builder_buttons" type="button" onclick="InsertRightParen()">)</button>&nbsp;&nbsp;
+                         <button class="builder_buttons" type="button" onclick="InsertWildCard()">[^,]*</button>&nbsp;&nbsp;
+                         <button class="builder_buttons" type="button" onclick="InsertComa()">,</button><br /><br />
+		<input type="text" id="builder_txtbox" size="75"><br />
+		Add to Rule# :<select name="e_rule_nbr" id="e_rule_nbr">
+                                    <option id="opt0" value="e_r0">0</option>
+                                    <option id="opt1" value="e_r1">1</option>
+                                    <option id="opt2" value="e_r2">2</option>
+                                    <option id="opt3" value="e_r3">3</option>
+                                    <option id="opt4" value="e_r4">4</option>
+                                    <option id="opt5" value="e_r5">5</option>
+                                    <option id="opt6" value="e_r6">6</option>
+                                    <option id="opt7" value="e_r7">7</option>
+                                    <option id="opt8" value="e_r8">8</option>
+                                    <option id="opt9" value="e_r9">9</option>
+                                    <option id="opt10" value="e_r10">10</option>
+                              </select><br />
+		<button class="builder_buttons" type="button" onclick="AddRule()">Add</button>
+		
+		</div>	
+		</div>
+</div>
+
+</body> 
